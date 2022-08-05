@@ -1,0 +1,39 @@
+version: '3'
+services:
+  nginx:
+    container_name: nginx-emailnotifier
+    build:
+      context: .docker/nginx
+    volumes:
+      - ./:/var/www/emailnotifier/
+      - ./.docker/log/nginx:/var/log/nginx/
+    ports:
+      - "80:80"
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    build:
+      context: .docker/php-8.0-fpm-alpine
+    container_name: php-fpm-emailnotifier
+    volumes:
+        - ./:/var/www/emailnotifier/
+    environment:
+      PHP_IDE_CONFIG: "serverName=emailnotifier_framework_servername"
+      DB_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE}
+
+  mysql:
+    image: mysql:8.0.28
+    container_name: ${MYSQL_HOST}
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - ${MYSQL_HOST_PORT}:3306
+    volumes:
+      - "./.docker/data/mysql/my.cnf:/etc/mysql/conf.d/my.cnf"
+      - "./.docker/data/mysql/db_data1:/var/lib/mysql"
