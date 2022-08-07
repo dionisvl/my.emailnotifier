@@ -19,10 +19,13 @@ services:
     volumes:
         - ./:/var/www/emailnotifier/
     environment:
-      PHP_IDE_CONFIG: "serverName=emailnotifier_framework_servername"
+      PHP_IDE_CONFIG: "serverName=emailnotifier_servername"
       DB_HOST: ${MYSQL_HOST}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      PROJECT_DIR: ${PROJECT_DIR}
 
   mysql:
     image: mysql:8.0.28

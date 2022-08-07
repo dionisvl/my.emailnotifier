@@ -21,3 +21,9 @@ migrate:
 
 bash:
 	docker-compose run --rm php-fpm /bin/sh
+
+test-notify:
+	docker-compose run --rm php-fpm php app/cron/notifyUsers.php
+
+test-email-validate:
+	docker-compose run --rm php-fpm php app/cron/validateEmails.php

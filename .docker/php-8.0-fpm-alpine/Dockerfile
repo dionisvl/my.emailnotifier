@@ -5,7 +5,7 @@ ENV \
 	# Setup same composer home directory for all users
 	COMPOSER_HOME="/usr/local/composer" \
 	PHP_VERSION=php8 \
-	PROJECT_DIR="/var/www/emailnotifier"
+	PROJECT_DIR="/var/www/emailnotifier/app"
 
 ARG PHP_EXTENSIONS="mysqli pdo_mysql pcntl"
 # Install dependencies
