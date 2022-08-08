@@ -17,6 +17,7 @@ function getExpiresUsersWithGoodValidatedEmail(PDO $DBH): array
         SELECT * FROM users 
             JOIN emails ON users.email_id = emails.email_id AND emails.check_status = 1
         WHERE validts BETWEEN NOW() AND NOW() + INTERVAL 3 DAY
+            AND confirmed = 1
          ")
         ->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -28,6 +29,7 @@ function getExpiresUsersWithNotValidatedEmail(PDO $DBH): array
         SELECT * FROM users 
             JOIN emails ON users.email_id = emails.email_id AND emails.check_status = 0 
         WHERE validts BETWEEN NOW() AND NOW() + INTERVAL 3 DAY
+            AND confirmed = 1
          ")
         ->fetchAll(PDO::FETCH_ASSOC);
 }
