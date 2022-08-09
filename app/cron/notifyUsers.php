@@ -18,7 +18,7 @@ require_once getenv('PROJECT_DIR') . '/DataProvider/notify_queue.php';
  * Обработка всех пользователей с истекающими подписками.
  */
 // 1. Ищем пользователей, у которых подписка истекла и е-мейл не прошел проверку на валидность.
-$usersAndNotCheckedEmails = getExpiresUsersWithNotValidatedEmail($DBH);
+$usersAndNotCheckedEmails = getExpiresUsersWithNotValidatedEmail();
 $count = count($usersAndNotCheckedEmails);
 if ($count === 0) {
     mylog('No users with expired subscription');
@@ -29,8 +29,7 @@ if ($count === 0) {
 }
 
 // 3. Ищем пользователей, у которых подписка истекла и е-мейл прошел проверку на валидность с успехом.
-$DBH = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, MYSQL_USER, MYSQL_PASSWORD,);
-$users = getExpiresUsersWithGoodValidatedEmail($DBH);
+$users = getExpiresUsersWithGoodValidatedEmail();
 mylog('Найдено пользователей с истекшими подписками и валидно проверенными е-мейлами: ' . count($users));
 // 4. Тех пользователей у которых подписка истекла делим на пачки фиксированного размера.
 $users_batches = array_chunk($users, 100);
@@ -39,11 +38,13 @@ try {
     foreach ($users_batches as $key => $users_batch) {
         mylog('стартовала отправка уведомлений пользователям. Пачка №' . $key . '.');
         // 5. Каждую пачку добавляем в очередь на отправку уведомлений.
-        addUsersToQueue($DBH, $users_batch);
+        addUsersToQueue($users_batch);
         // 6. Запускаем процесс отправки уведомлений из очереди.
-        runNotifySendQueue($DBH);
-        mylog('Пачка отправки уведомлений пользователям ' . $key . ' завершена. Количество пользователей в пачке: ' .
-            count($users_batch) . PHP_EOL);
+        runNotifySendQueue();
+        mylog(
+            'Пачка отправки уведомлений пользователям ' . $key . ' завершена. Количество пользователей в пачке: ' .
+            count($users_batch) . PHP_EOL
+        );
         // 7. переходим к следующей пачке до тех пор, пока пачки пользователей не закончатся.
     }
 } catch (Throwable $e) {
@@ -53,4 +54,4 @@ try {
     return false;
 }
 // 8. Очищаем таблицу очереди на отправку уведомлений.
-truncateQueue($DBH);
+truncateQueue();

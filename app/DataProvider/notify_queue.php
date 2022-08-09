@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 
-function addUsersToQueue(PDO $DBH, array $users): void
+function addUsersToQueue(array $users): void
 {
+    $DBH = getConnection();
     $sql = 'INSERT INTO notify_queue (user_id) VALUES ';
     $values = [];
     foreach ($users as $user) {
@@ -16,8 +17,9 @@ function addUsersToQueue(PDO $DBH, array $users): void
 }
 
 // Получим первый ID пользователя, что найдем в таблице очереди.
-function getFirstUserIdFromQueue(PDO $DBH): ?int
+function getFirstUserIdFromQueue(): ?int
 {
+    $DBH = getConnection();
     $STH = $DBH->query('SELECT user_id FROM notify_queue WHERE notify_at IS NULL ORDER BY id LIMIT 1');
     $STH->setFetchMode(PDO::FETCH_ASSOC);
     $row = $STH->fetch();
@@ -27,8 +29,9 @@ function getFirstUserIdFromQueue(PDO $DBH): ?int
     return (int)$row['user_id'];
 }
 
-function setNotifyAtToUser(PDO $DBH, int $userId): void
+function setNotifyAtToUser(int $userId): void
 {
+    $DBH = getConnection();
     $stm = $DBH->prepare('UPDATE notify_queue SET notify_at = :time WHERE user_id = :user_id');
     $stm->bindValue(':user_id', $userId, PDO::PARAM_INT);
     $stm->bindValue(':time', date('Y-m-d H:i:s'));
@@ -36,8 +39,9 @@ function setNotifyAtToUser(PDO $DBH, int $userId): void
 }
 
 
-function truncateQueue($DBH): void
+function truncateQueue(): void
 {
+    $DBH = getConnection();
     $stm = $DBH->prepare('TRUNCATE table notify_queue');
     $stm->execute();
 }

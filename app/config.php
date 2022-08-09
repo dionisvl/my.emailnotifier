@@ -7,10 +7,12 @@ define("DB_HOST", getenv('DB_HOST'));
 
 const DEFAULT_EMAIL = 'myEmail@mail.com';
 
-$DBH = new PDO(
-    'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME,
-    MYSQL_USER,
-    MYSQL_PASSWORD,
-    [PDO::ATTR_PERSISTENT => true],
-);
-
+function getConnection(bool $persistent = true): PDO
+{
+    return new PDO(
+        'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME,
+        MYSQL_USER,
+        MYSQL_PASSWORD,
+        [PDO::ATTR_PERSISTENT => $persistent],
+    );
+}

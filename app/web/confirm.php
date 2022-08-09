@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-require_once '../config.php';
-require_once '../functions.php';
-require_once '../DataProvider/users.php';
+require_once getenv('PROJECT_DIR') . '/config.php';
+require_once getenv('PROJECT_DIR') . '/functions.php';
+require_once getenv('PROJECT_DIR') . '/DataProvider/users.php';
 
-if (isset($_GET['userId'])) {
-    $userId = base64_decode($_GET['userId']);
+if (isset($_GET['confirmCode'])) {
+    $userId = base64_decode($_GET['confirmCode']);
     if (is_numeric($userId)) {
-        confirmUser($DBH, (int)$userId);
+        confirmUser((int)$userId);
         die('success confirmed');
     }
 

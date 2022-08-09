@@ -22,8 +22,9 @@ function send_email(
 }
 
 // Достает из БД пользователя. Формирует письмо, передает его сервису отправки писем.
-function sendEmail(PDO $DBH, int $userId): void
+function sendEmail(int $userId): void
 {
+    $DBH = getConnection();
     $stm = $DBH->prepare("SELECT * FROM users JOIN emails ON emails.email_id = users.email_id WHERE users.id = :id");
     $stm->bindValue(':id', $userId, PDO::PARAM_INT);
     $stm->execute();
@@ -58,12 +59,11 @@ function runParallelValidateEmails(array $emails)
                 throw new RuntimeException("Unable to fork process");
             case 0:
                 try {
-                    $DBH = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, MYSQL_USER, MYSQL_PASSWORD,);
                     $result = check_email($emailRow['email']);
                     if ($result === true) {
-                        updateEmailStatus($DBH, (int)$emailRow['email_id'], 1);
+                        updateEmailStatus((int)$emailRow['email_id'], 1);
                     } else {
-                        updateEmailStatus($DBH, (int)$emailRow['email_id'], 2);
+                        updateEmailStatus((int)$emailRow['email_id'], 2);
                     }
                 } catch (Throwable $e) {
                     mylog(
@@ -88,14 +88,14 @@ function runParallelValidateEmails(array $emails)
 /**
  * Берем из очереди пользователей и отправляем письма пока пользователи в очереди не закончатся
  */
-function runNotifySendQueue(PDO $DBH): void
+function runNotifySendQueue(): void
 {
     while (true) {
-        $userId = getFirstUserIdFromQueue($DBH);
+        $userId = getFirstUserIdFromQueue();
         if ($userId === null) {
             break;
         }
-        sendEmail($DBH, $userId);
-        setNotifyAtToUser($DBH, $userId);
+        sendEmail($userId);
+        setNotifyAtToUser($userId);
     }
 }

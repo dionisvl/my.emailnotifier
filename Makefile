@@ -1,6 +1,5 @@
 init: docker-down-clear \
-	docker-up \
-	backend-init
+	docker-up
 
 up: docker-up
 down: docker-down
@@ -13,11 +12,6 @@ docker-down:
 
 docker-down-clear:
 	docker-compose down -v --remove-orphans
-
-backend-init: migrate
-
-migrate:
-	docker-compose run --rm php-fpm php migrate.php
 
 bash:
 	docker-compose run --rm php-fpm /bin/sh

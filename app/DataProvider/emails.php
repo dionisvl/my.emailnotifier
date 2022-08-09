@@ -6,16 +6,18 @@ require_once getenv('PROJECT_DIR').'/config.php';
 require_once getenv('PROJECT_DIR').'/functions.php';
 
 // Получить все е-мейлы с непроверенным статусом
-function getNotCheckedEmails(PDO $DBH): array
+function getNotCheckedEmails(): array
 {
+    $DBH = getConnection();
     return $DBH
         ->query("SELECT * FROM emails WHERE check_status = 0")
         ->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // обновить статус валидации е-мейла на указанный
-function updateEmailStatus(PDO $DBH, int $id, int $newStatus): void
+function updateEmailStatus(int $id, int $newStatus): void
 {
+    $DBH = getConnection(false);
     $stm = $DBH->prepare("UPDATE emails SET check_status = :check_status WHERE email_id = :email_id");
     $stm->bindValue(':check_status', $newStatus, PDO::PARAM_INT);
     $stm->bindValue(':email_id', $id, PDO::PARAM_INT);

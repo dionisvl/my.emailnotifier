@@ -12,7 +12,7 @@ require_once getenv('PROJECT_DIR') . '/config.php';
 require_once getenv('PROJECT_DIR') . '/functions.php';
 require_once getenv('PROJECT_DIR') . '/DataProvider/emails.php';
 
-$emails = getNotCheckedEmails($DBH);
+$emails = getNotCheckedEmails();
 
 $emails_batches = array_chunk($emails, 100);
 
